@@ -1,5 +1,16 @@
 [![ci-badge][]][ci] [![docs-badge][]][docs] [![guild-badge][]][guild] [![crates.io version]][crates.io link] [![rust-version-badge]][rust-version-link]
 
+# info
+This is a fork of Serenity, a library for Rust which is used for building Discord bots.
+
+Only difference being that this fork supports **selfbots**, whereas the upstream doesn't.
+
+> **Warning**:
+Selfbots are against Discord's Terms of Service, use at your own risk!
+
+# installation
+Cargo.toml: `serenity = { git = "https://github.com/vars1ty/serenity", branch = "current" }`
+
 # serenity
 
 ![serenity logo][logo]
