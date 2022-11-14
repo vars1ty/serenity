@@ -787,8 +787,7 @@ impl Http {
             multipart: None,
             headers: None,
             route: RouteInfo::CreateReaction {
-                // Escape emojis like '#️⃣' that contain a hash
-                reaction: &reaction_type.as_data().replace('#', "%23"),
+                reaction: &reaction_type.as_data(),
                 channel_id,
                 message_id,
             },
@@ -1194,8 +1193,7 @@ impl Http {
             multipart: None,
             headers: None,
             route: RouteInfo::DeleteReaction {
-                // Escape emojis like '#️⃣' that contain a hash
-                reaction: &reaction_type.as_data().replace('#', "%23"),
+                reaction: &reaction_type.as_data(),
                 user: &user,
                 channel_id,
                 message_id,
