@@ -54,7 +54,7 @@ pub enum Channel {
     /// [directory]: ChannelType::Directory
     Guild(GuildChannel),
     /// A private channel to another [`User`]. No other users may access the
-    /// channel. For multi-user "private channels", use a group.
+    /// channel.
     Private(PrivateChannel),
     /// A category of [`GuildChannel`]s
     Category(ChannelCategory),
@@ -524,6 +524,7 @@ mod test {
                 parent_id: None,
                 guild_id: GuildId(2),
                 kind: ChannelType::Text,
+                owner_id: None,
                 last_message_id: None,
                 last_pin_timestamp: None,
                 name: "nsfw-stuff".to_string(),
