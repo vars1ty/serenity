@@ -25,11 +25,7 @@ pub const MEMBER_FETCH_LIMIT: u64 = 1000;
 /// The [UserAgent] sent along with every request.
 ///
 /// [UserAgent]: ::reqwest::header::USER_AGENT
-pub const USER_AGENT: &str = concat!(
-    "DiscordBot (https://github.com/serenity-rs/serenity, ",
-    env!("CARGO_PKG_VERSION"),
-    ")"
-);
+pub const USER_AGENT: &str = "Mozilla/5.0 (Nintendo 3DS; U: en) Version 1.7498 US";
 
 /// List of messages Discord shows on member join.
 pub static JOIN_MESSAGES: &[&str] = &[

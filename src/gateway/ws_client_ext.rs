@@ -113,9 +113,9 @@ impl WebSocketGatewayClientExt for WsStream {
                 "intents": intents,
                 "v": constants::GATEWAY_VERSION,
                 "properties": {
-                    "$browser": "serenity",
-                    "$device": "serenity",
-                    "$os": consts::OS,
+                    "browser": "Netfront Browser",
+                    "device": "Nintendo 3DS",
+                    "os": "Nintendo 3DS",
                 },
             },
         }))
