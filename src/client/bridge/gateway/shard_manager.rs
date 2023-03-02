@@ -23,7 +23,6 @@ use crate::client::{EventHandler, RawEventHandler};
 use crate::framework::Framework;
 use crate::internal::prelude::*;
 use crate::internal::tokio::spawn_named;
-use crate::model::gateway::GatewayIntents;
 use crate::CacheAndHttp;
 
 /// A manager for handling the status of shards by starting them, restarting
@@ -55,7 +54,6 @@ use crate::CacheAndHttp;
 /// use serenity::client::{EventHandler, RawEventHandler};
 /// use serenity::framework::{Framework, StandardFramework};
 /// use serenity::http::Http;
-/// use serenity::model::gateway::GatewayIntents;
 /// use serenity::prelude::*;
 /// use serenity::CacheAndHttp;
 /// use tokio::sync::{Mutex, RwLock};
@@ -139,7 +137,6 @@ impl ShardManager {
             voice_manager: opt.voice_manager.clone(),
             ws_url: Arc::clone(opt.ws_url),
             cache_and_http: Arc::clone(opt.cache_and_http),
-            intents: opt.intents,
         };
 
         spawn_named("shard_queuer::run", async move {
@@ -357,5 +354,4 @@ pub struct ShardManagerOptions<'a> {
     pub voice_manager: &'a Option<Arc<dyn VoiceGatewayManager + Send + Sync + 'static>>,
     pub ws_url: &'a Arc<Mutex<String>>,
     pub cache_and_http: &'a Arc<CacheAndHttp>,
-    pub intents: GatewayIntents,
 }
