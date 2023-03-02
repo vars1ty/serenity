@@ -1,11 +1,10 @@
-use std::env::consts;
 use std::time::SystemTime;
 
 use async_trait::async_trait;
 use tracing::{debug, instrument, trace};
 
 use crate::client::bridge::gateway::ChunkGuildFilter;
-use crate::constants::{self, OpCode};
+use crate::constants::OpCode;
 use crate::gateway::{CurrentPresence, WsStream};
 use crate::internal::prelude::*;
 use crate::internal::ws_impl::SenderExt;
