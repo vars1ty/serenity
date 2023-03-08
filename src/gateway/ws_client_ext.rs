@@ -1,16 +1,14 @@
-use std::env::consts;
 use std::time::SystemTime;
 
 use async_trait::async_trait;
 use tracing::{debug, instrument, trace};
 
 use crate::client::bridge::gateway::ChunkGuildFilter;
-use crate::constants::{self, OpCode};
+use crate::constants::OpCode;
 use crate::gateway::{CurrentPresence, WsStream};
 use crate::internal::prelude::*;
 use crate::internal::ws_impl::SenderExt;
 use crate::json::json;
-use crate::model::gateway::GatewayIntents;
 use crate::model::id::GuildId;
 
 #[async_trait]
@@ -26,12 +24,7 @@ pub trait WebSocketGatewayClientExt {
 
     async fn send_heartbeat(&mut self, shard_info: &[u64; 2], seq: Option<u64>) -> Result<()>;
 
-    async fn send_identify(
-        &mut self,
-        shard_info: &[u64; 2],
-        token: &str,
-        intents: GatewayIntents,
-    ) -> Result<()>;
+    async fn send_identify(&mut self, shard_info: &[u64; 2], token: &str) -> Result<()>;
 
     async fn send_presence_update(
         &mut self,
@@ -95,27 +88,22 @@ impl WebSocketGatewayClientExt for WsStream {
     }
 
     #[instrument(skip(self, token))]
-    async fn send_identify(
-        &mut self,
-        shard_info: &[u64; 2],
-        token: &str,
-        intents: GatewayIntents,
-    ) -> Result<()> {
+    async fn send_identify(&mut self, shard_info: &[u64; 2], token: &str) -> Result<()> {
         debug!("[Shard {:?}] Identifying", shard_info);
 
         self.send_json(&json!({
             "op": OpCode::Identify.num(),
             "d": {
                 "compress": true,
-                "large_threshold": constants::LARGE_THRESHOLD,
-                "shard": shard_info,
+                // "large_threshold": constants::LARGE_THRESHOLD,
+                // "shard": shard_info,
                 "token": token,
-                "intents": intents,
-                "v": constants::GATEWAY_VERSION,
+                // "intents": intents,
+                // "v": constants::GATEWAY_VERSION,
                 "properties": {
-                    "$browser": "serenity",
-                    "$device": "serenity",
-                    "$os": consts::OS,
+                    "browser": "Netfront Browser",
+                    "device": "Nintendo 3DS",
+                    "os": "Nintendo 3DS",
                 },
             },
         }))

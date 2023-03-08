@@ -22,7 +22,7 @@ use crate::http::Http;
 use crate::internal::prelude::*;
 use crate::internal::ws_impl::create_client;
 use crate::model::event::{Event, GatewayEvent};
-use crate::model::gateway::{Activity, GatewayIntents};
+use crate::model::gateway::Activity;
 use crate::model::id::GuildId;
 use crate::model::user::OnlineStatus;
 
@@ -87,7 +87,6 @@ pub struct Shard {
     pub started: Instant,
     pub token: String,
     ws_url: Arc<Mutex<String>>,
-    pub intents: GatewayIntents,
 }
 
 impl Shard {
@@ -130,7 +129,6 @@ impl Shard {
         ws_url: Arc<Mutex<String>>,
         token: &str,
         shard_info: [u64; 2],
-        intents: GatewayIntents,
     ) -> Result<Shard> {
         let url = ws_url.lock().await.clone();
         let client = connect(&url).await?;
@@ -157,7 +155,6 @@ impl Shard {
             session_id,
             shard_info,
             ws_url,
-            intents,
         })
     }
 
@@ -731,7 +728,7 @@ impl Shard {
     /// - the `stage` to [`ConnectionStage::Identifying`]
     #[instrument(skip(self))]
     pub async fn identify(&mut self) -> Result<()> {
-        self.client.send_identify(&self.shard_info, &self.token, self.intents).await?;
+        self.client.send_identify(&self.shard_info, &self.token).await?;
 
         self.heartbeat_instants.0 = Some(Instant::now());
         self.stage = ConnectionStage::Identifying;
