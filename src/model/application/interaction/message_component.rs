@@ -3,9 +3,7 @@ use serde::Serialize;
 
 #[cfg(feature = "http")]
 use crate::builder::{
-    CreateInteractionResponse,
-    CreateInteractionResponseFollowup,
-    EditInteractionResponse,
+    CreateInteractionResponse, CreateInteractionResponseFollowup, EditInteractionResponse,
 };
 #[cfg(feature = "http")]
 use crate::http::Http;
@@ -188,13 +186,29 @@ impl MessageComponentInteraction {
     {
         let mut interaction_response = CreateInteractionResponseFollowup::default();
         f(&mut interaction_response);
+        self._create_followup_message(http.as_ref(), interaction_response).await
+    }
 
+    async fn _create_followup_message<'a>(
+        &self,
+        http: &Http,
+        interaction_response: CreateInteractionResponseFollowup<'a>,
+    ) -> Result<Message> {
         let map = json::hashmap_to_json_map(interaction_response.0);
 
-        Message::check_content_length(&map)?;
-        Message::check_embed_length(&map)?;
+        Message::check_lengths(&map)?;
 
-        http.as_ref().create_followup_message(&self.token, &Value::from(map)).await
+        if interaction_response.1.is_empty() {
+            http.as_ref().create_followup_message(&self.token, &Value::from(map)).await
+        } else {
+            http.as_ref()
+                .create_followup_message_with_files(
+                    &self.token,
+                    &Value::from(map),
+                    interaction_response.1,
+                )
+                .await
+        }
     }
 
     /// Edits a followup response to the response sent.
@@ -222,12 +236,22 @@ impl MessageComponentInteraction {
 
         let map = json::hashmap_to_json_map(interaction_response.0);
 
-        Message::check_content_length(&map)?;
-        Message::check_embed_length(&map)?;
+        Message::check_lengths(&map)?;
 
-        http.as_ref()
-            .edit_followup_message(&self.token, message_id.into().into(), &Value::from(map))
-            .await
+        let message_id = message_id.into().into();
+
+        if interaction_response.1.is_empty() {
+            http.as_ref().edit_followup_message(&self.token, message_id, &Value::from(map)).await
+        } else {
+            http.as_ref()
+                .edit_followup_message_and_attachments(
+                    &self.token,
+                    message_id,
+                    &Value::from(map),
+                    interaction_response.1,
+                )
+                .await
+        }
     }
 
     /// Deletes a followup message.
@@ -256,6 +280,46 @@ impl MessageComponentInteraction {
         message_id: M,
     ) -> Result<Message> {
         http.as_ref().get_followup_message(&self.token, message_id.into().into()).await
+    }
+
+    /// Responds to this interaction by editing the original message of a component or modal interaction.
+    ///
+    /// **Note**: Message contents must be under 2000 unicode code points.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`Error::Model`] if the message content is too long.
+    /// May also return an [`Error::Http`] if the API returns an error,
+    /// or an [`Error::Json`] if there is an error in deserializing the
+    /// API response.
+    pub async fn edit_original_message<'a, F>(&self, http: impl AsRef<Http>, f: F) -> Result<()>
+    where
+        for<'b> F:
+            FnOnce(&'b mut CreateInteractionResponse<'a>) -> &'b mut CreateInteractionResponse<'a>,
+    {
+        let mut interaction_response = CreateInteractionResponse::default();
+        interaction_response.kind(InteractionResponseType::UpdateMessage);
+        f(&mut interaction_response);
+
+        let map = json::hashmap_to_json_map(interaction_response.0);
+
+        Message::check_content_length(&map)?;
+        Message::check_embed_length(&map)?;
+
+        if interaction_response.1.is_empty() {
+            http.as_ref()
+                .create_interaction_response(self.id.0, &self.token, &Value::from(map))
+                .await
+        } else {
+            http.as_ref()
+                .create_interaction_response_with_files(
+                    self.id.0,
+                    &self.token,
+                    &Value::from(map),
+                    interaction_response.1,
+                )
+                .await
+        }
     }
 
     /// Helper function to defer an interaction

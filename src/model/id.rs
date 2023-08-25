@@ -77,6 +77,20 @@ macro_rules! id_u64 {
     }
 }
 
+macro_rules! id_from_str {
+    ($($name:ident;)*) => {
+        $(
+            impl std::str::FromStr for $name {
+                type Err = <u64 as std::str::FromStr>::Err;
+
+                fn from_str(s: &str) -> Result<Self, Self::Err> {
+                    Ok(Self(s.parse()?))
+                }
+            }
+        )*
+    }
+}
+
 /// An identifier for an Application.
 #[derive(
     Copy, Clone, Default, Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Deserialize, Serialize,
@@ -246,6 +260,31 @@ id_u64! {
     StickerPackBannerId;
     SkuId;
     UserId;
+    WebhookId;
+    AuditLogEntryId;
+    InteractionId;
+    CommandId;
+    CommandPermissionId;
+    CommandVersionId;
+    TargetId;
+    StageInstanceId;
+    RuleId;
+    ForumTagId;
+}
+
+id_from_str! {
+    AttachmentId;
+    ApplicationId;
+    EmojiId;
+    GenericId;
+    GuildId;
+    IntegrationId;
+    MessageId;
+    ScheduledEventId;
+    StickerId;
+    StickerPackId;
+    StickerPackBannerId;
+    SkuId;
     WebhookId;
     AuditLogEntryId;
     InteractionId;
